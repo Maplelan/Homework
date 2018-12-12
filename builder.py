@@ -1,33 +1,32 @@
 #-*- coding: utf-8 -*-
 #encoding=utf-8
 #coding:utf-8
-import os
-import re
-import subprocess
-import sys
+import os,re,subprocess,sys
 
+cwd = sys.path[0]   #当前工作目录，不带\
+retry=5
+surffix="c"
 
 def main():
-    #声明
-    cwd = sys.path[0]       #当前工作目录，不带\
-    retry=5
-    fileList=walk4files(cwd,"c")
+    
+
+#参数 ： 工作目录(不带\),重试次数,文件后缀过滤
+def buildPic(wdir,retry=5,surffix=""):
+    fileList=walk4files(wdir,"c")
     fileList_noSpace=sort(fileList)
     failedPic=[]
     cmdOut=[]
     #开始工作
-    #run("rmdir /s/q "+cwd+"\\pic") #删除pic文件夹
-    run("mkdir "+cwd+"\\pic")
+    run("mkdir "+wdir+"\\pic")
     for i in range(len(fileList)):
-        print("第"+str(i)+"次外循环，共"+str(len(fileList))+"次")
-        if os.path.isfile(cwd+"\\pic\\"+fileList_noSpace[i]+".png"):
+        print("第"+str(i)+"个文件，共"+str(len(fileList))+"个")
+        if os.path.isfile(wdir+"\\pic\\"+fileList_noSpace[i]+".png"):
             print(fileList[i]+"的图片已存在\n")
             continue
-        msg=""
         for j in range(retry+1):
             print("生成"+fileList_noSpace[i]+".png中\n")
-            msg = run(genCMD(cwd+"\\"+fileList[i],fileList_noSpace[i],cwd))
-            if os.path.isfile(cwd+"\\pic\\"+fileList_noSpace[i]+".png"):
+            msg = run(genCMD(wdir+"\\"+fileList[i],fileList_noSpace[i],wdir))
+            if os.path.isfile(wdir+"\\pic\\"+fileList_noSpace[i]+".png"):
                 print(fileList[i]+"-----------------------生成成功("+str(j)+"次重试)\n")
                 break
             if(j==(retry+1)):
@@ -38,9 +37,9 @@ def main():
 
     #生成README.md
     print("开始生成README")
-    with open(cwd+"\\README.md",'w') as f:
-        cwdname = cwd.split("\\")[-1]     #当前目录名
-        f.write("# 金陵科技学院-18数字媒体技术-"+cwdname+"\n")
+    with open(wdir+"\\README.md",'w') as f:
+        wdirname = wdir.split("\\")[-1]     #当前目录名
+        f.write("# 金陵科技学院-18数字媒体技术-"+wdirname+"\n")
         f.write("> 此文档及相关图片由程序自动生成\n")
         for i in range(len(failedPic)):
             f.write("\t"+failedPic[i]+" 的图片生成失败\n")
@@ -88,6 +87,19 @@ def walk4files(dir,suffix = ""):
             else:
                 continue
     return nameList
+
+#正则遍历某个目录的所有文件夹，返回一个List.若正则为空，则遍历所有文件夹
+def walk4dirs(dir,reg="",tag=re.I):
+    dirList=[]
+    for root, dirs, files in os.walk(dir):
+        for name in dirs:
+            if suffix == "":
+                dirList.append(name)
+            elif re.findall(reg, name,tag):
+                dirList.append(name)
+            else:
+                continue
+    return dirList
 
 if __name__=="__main__":
     main()
