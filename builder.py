@@ -3,12 +3,18 @@
 #coding:utf-8
 import os,re,subprocess,sys
 
-cwd = sys.path[0]   #当前工作目录，不带\
-retry=5
-surffix="c"
+
 
 def main():
-    
+    #配置
+    cwd = sys.path[0]   #当前目录，不带\
+    retry=5
+    surffix="c"
+
+    dirList=walk4dirs(cwd,"实验.+",re.M)
+    for name in dirList:
+        wdir=cwd+"\\"+name
+        buildPic(wdir,retry,"c")
 
 #参数 ： 工作目录(不带\),重试次数,文件后缀过滤
 def buildPic(wdir,retry=5,surffix=""):
@@ -93,7 +99,7 @@ def walk4dirs(dir,reg="",tag=re.I):
     dirList=[]
     for root, dirs, files in os.walk(dir):
         for name in dirs:
-            if suffix == "":
+            if reg == "":
                 dirList.append(name)
             elif re.findall(reg, name,tag):
                 dirList.append(name)
