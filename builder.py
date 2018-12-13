@@ -43,7 +43,7 @@ def buildPic(wdir,retry=5,surffix=""):
 
     #生成README.md
     print("开始生成README")
-    with open(wdir+"\\README.md",'w') as f:
+    with open(wdir+"\\README.md",'w',encoding="utf-8") as f:
         wdirname = wdir.split("\\")[-1]     #当前目录名
         f.write("# 金陵科技学院-18数字媒体技术-"+wdirname+"\n")
         f.write("> 此文档及相关图片由程序自动生成\n")
